@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: iqinvest365
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon
+    plan: free
+    
+    # Auto-deploy on git push
+    autoDeploy: true
+    
+    # Health check
+    healthCheckPath: /
+    
+    # Environment variables (non-sensitive)
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: WORKERS
+        value: "4"
+      - key: THREADS
+        value: "2"
+    
+    # Secrets (must be added in Render dashboard)
+    # These secrets must be set in Render dashboard:
+    # - FLASK_SECRET_KEY
+    # - ENCRYPTION_KEY
+    # - EMAIL_PASSWORD
+    # - FIREBASE_KEY
+    
+    # Build configuration
+    buildCommand: echo "Building with Dockerfile"
+    startCommand: gunicorn app:app --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT
+    
+    # Port
+    port: 5000
+    
+    # Custom domain (optional)
+    customDomains:
+      - iqinvest365.onrender.com
